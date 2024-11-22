@@ -9,7 +9,6 @@ const methodOverride = require('method-override')
 const {isActiveRoute} = require('./server/helpers/routeHelpers')
 
 const app = express()
-const port = process.env.PORT || 5000
 app.use(express.static('public'))
 app.use('/uploads', express.static('uploads')); 
 app.use(express.urlencoded({extended:true}))
@@ -36,6 +35,7 @@ app.use('/',require('./server/routes/main'))
 app.use('/',require('./server/routes/admin'))
 
 connectDb();
+const port = process.env.PORT || 5000
 app.listen(port,()=>{
   console.log("App is running on port",port)
 })
