@@ -4,10 +4,23 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 
 const adminLayout = '../views/layouts/admin';
 const jwtSecret = process.env.JWT_SECRET;
 
+// Set up multer for storing uploaded files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // specify the folder where images will be saved
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // naming the file
+  }
+});
+
+const upload = multer({ storage: storage });
 
 /**
  * 
@@ -126,27 +139,26 @@ router.get('/add-post', authMiddleware, async (req, res) => {
 
 });
 
-
 /**
- * POST /
- * Admin - Create New Post
-*/
-router.post('/add-post', authMiddleware, async (req, res) => {
+ * POST /add-post
+ * Admin - Create New Post with Image Upload
+ */
+router.post('/add-post', authMiddleware, upload.single('image'), async (req, res) => {
   try {
-    try {
-      const newPost = new Post({
-        title: req.body.title,
-        body: req.body.body
-      });
+    const { title, body } = req.body;
+    const image = req.file ? req.file.path : null; // Check if an image was uploaded
 
-      await Post.create(newPost);
-      res.redirect('/dashboard');
-    } catch (error) {
-      console.log(error);
-    }
+    const newPost = new Post({
+      title,
+      body,
+      image // Save image path to the database
+    });
 
+    await newPost.save();
+    res.redirect('/dashboard');
   } catch (error) {
     console.log(error);
+    res.status(500).send('Server Error');
   }
 });
 

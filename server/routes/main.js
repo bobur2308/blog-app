@@ -3,71 +3,57 @@ const router = express.Router()
 const Post = require('../models/Post')
 
 // Get / Home
-router.get('/',async(req,res)=>{
+// Home route
+router.get('/', async (req, res) => {
   try {
     const locals = {
-      title:"NodeJs Blog App",
-      description:"Simple blog app using NodeJs, ExpressJs and MongoDb."
-    }
-    let perPage = 10
+      title: "NodeJs Blog App",
+      description: "Simple blog app using NodeJs, ExpressJs and MongoDb.",
+      currentRoute: "/" // Add currentRoute here
+    };
+    let perPage = 10;
     let page = req.query.page || 1;
-    const data = await Post.aggregate([{$sort:{createdAt:-1}}])
+    const data = await Post.aggregate([{ $sort: { createdAt: -1 } }])
       .skip(perPage * page - perPage)
       .limit(perPage)
-      .exec()
-    
+      .exec();
+
     const count = await Post.countDocuments({});
     const nextPage = parseInt(page) + 1;
-    const hasNextPage = nextPage <=Math.ceil(count/perPage)
+    const hasNextPage = nextPage <= Math.ceil(count / perPage);
 
-    
-    res.render('index',{
+    res.render('index', {
       locals,
       data,
-      current:page,
-      nextPage:hasNextPage ? nextPage : null,
-      currentRoute:"/"
-    })
+      current: page,
+      nextPage: hasNextPage ? nextPage : null,
+      currentRoute: "/" // Pass it here as well
+    });
   } catch (error) {
     console.log(error);
   }
+});
 
-})
-
-
-// router.get('/',async(req,res)=>{
-//   const locals = {
-//     title:"NodeJs Blog App",
-//     description:"Simple blog app using NodeJs, ExpressJs and MongoDb."
-//   }
-
-//   try {
-//     const data = await Post.find()
-//     res.render('index',{locals,data})
-//   } catch (error) {
-//     console.log(error);
-//   }
-
-// })
-
-router.get('/post/:id',async(req,res)=>{
+// Post route
+router.get('/post/:id', async (req, res) => {
   try {
     const slug = req.params.id;
-    const data = await Post.findById({_id:slug})
+    const data = await Post.findById({ _id: slug });
     const locals = {
-      title:data.title,
-      description:"Simple blog app using NodeJs, ExpressJs and MongoDb.",
-      currentRoute:`/post/${slug}`
-    }
-    res.render('post',{
+      title: data.title,
+      description: "Simple blog app using NodeJs, ExpressJs and MongoDb.",
+      currentRoute: `/post/${slug}` // Add currentRoute here
+    };
+    res.render('post', {
       locals,
       data,
-      currentRoute:`/post/${slug}`
-    })
+      currentRoute: `/post/${slug}` // Pass it here as well
+    });
   } catch (error) {
     console.log(error);
   }
-})
+});
+
 
 
 // post search
@@ -97,8 +83,6 @@ router.post('/search',async(req,res)=>{
   }
 
 })
-
-
 
 router.get('/about',(req,res)=>{
   res.render('about',{

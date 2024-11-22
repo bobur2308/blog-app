@@ -338,3 +338,27 @@ img {
 .pagination:hover {
   color: var(--black);
 }
+
+.post-container {
+  display: flex; /* Use flexbox to align items side by side */
+  justify-content: space-between; /* Add space between image and content */
+  align-items: center; /* Vertically center the content */
+  margin-bottom: 20px; /* Add space below the content */
+}
+
+.post-image {
+  flex: 1; /* Allow the image to take 1 portion of space */
+  text-align: right; /* Align image to the right */
+}
+
+.post-img {
+  width: auto; /* Maintain aspect ratio */
+  height: auto;
+  max-width: 50%; /* Control the image size, adjust as needed */
+  max-height: 300px; /* Limit the height to 300px */
+}
+
+.article {
+  flex: 2; /* Allow the text content to take 2 portions of space */
+  padding-right: 20px; /* Add space between text and image */
+}
